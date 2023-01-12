@@ -1,17 +1,12 @@
 package com.fhtw.taskmanagerclient.controller;
 import com.fhtw.taskmanagerclient.ClientApplication;
 import com.fhtw.taskmanagerclient.model.Client;
-import com.fhtw.taskmanagerclient.model.EntryModel;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -36,7 +31,7 @@ public class LoginController implements Initializable{
 
     @FXML
     void signInButtonClick(ActionEvent event) throws IOException {
-        if(client.loginRequest(usernameTextField.getText(), passwordTextField.getText()))
+        if(client.login(usernameTextField.getText(), passwordTextField.getText()))
         {
             FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("client-view.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> new ClientController(client));
@@ -44,6 +39,12 @@ public class LoginController implements Initializable{
             stage.setTitle("Task Manager");
             stage.setScene(scene);
             stage.show();
+        }else{
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Wrong Credentials", ButtonType.OK);
+            alert.showAndWait();
+            if (alert.getResult() == ButtonType.OK) {
+                alert.close();
+            }
         }
 
     }
