@@ -4,7 +4,6 @@ import com.fhtw.taskmanagerclient.model.dto.*;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.basic.NullConverter;
 import com.thoughtworks.xstream.core.TreeMarshallingStrategy;
-import com.thoughtworks.xstream.io.binary.Token;
 import com.thoughtworks.xstream.security.AnyTypePermission;
 
 import java.io.*;
@@ -13,6 +12,11 @@ import java.text.ParseException;
 
 public class Client {
     private String hostName;
+
+    public String getToken() {
+        return token;
+    }
+
     private String token = "";
     private int portNumber;
     XStream xstream = null;
@@ -60,19 +64,26 @@ public class Client {
         userInfoUpdate();
     }
     public void addTask(TaskDto task) throws IOException, ParseException {
-        AddTaskRequest request =
-                new AddTaskRequest(this.token,
-                        task.getEmployeeTask(),
-                        task.getEmployeeDateFrom(),
-                        task.getEmployeeHoursSpent());
-
+        AddTaskRequest request = new AddTaskRequest (this.token,
+                                                    task.getEmployeeTask(),
+                                                    task.getEmployeeDateFrom(),
+                                                    task.getEmployeeHoursSpent());
         out.writeUTF(xstream.toXML(request));
         String serverResponseXml = in.readUTF();
         AddTaskResponse addTaskResponse = (AddTaskResponse) xstream.fromXML(serverResponseXml);
+
         System.out.println("Server response: "+addTaskResponse);
     }
 
+    public GetAssociateTasksResponse getTasksInAnInterval(String startDate, String endDate, String token) throws IOException, ParseException {
 
+        GetAssociateTasksRequest getAssociateTasksRequest = new GetAssociateTasksRequest(startDate, endDate, token);
+
+        out.writeUTF(xstream.toXML(getAssociateTasksRequest));
+        GetAssociateTasksResponse getAssociateTasksResponse = (GetAssociateTasksResponse) xstream.fromXML(in.readUTF());
+        System.out.println("Server response: " + getAssociateTasksResponse);
+        return getAssociateTasksResponse;
+    }
 
     private void initializeXstream(){
         xstream = new XStream();

@@ -38,7 +38,7 @@ public class SubmitionController{
                 taskTextField.getText(),
                 taskDateDatePicker.getValue().toString(),
                 Double.parseDouble(durationTextField.getText()));
-
+        System.out.println(taskDateDatePicker.getValue().toString());
         this.client.addTask(task);
         stage.close();
     }
