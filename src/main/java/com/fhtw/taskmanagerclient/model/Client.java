@@ -12,11 +12,6 @@ import java.text.ParseException;
 
 public class Client {
     private String hostName;
-
-    public String getToken() {
-        return token;
-    }
-
     private String token = "";
     private int portNumber;
     XStream xstream = null;
@@ -31,6 +26,10 @@ public class Client {
         this.out = new DataOutputStream(socket.getOutputStream());
         this.in = new DataInputStream(socket.getInputStream());
         initializeXstream();
+    }
+
+    public String getToken() {
+        return token;
     }
     //sends a login request to the server
     public boolean login(String username, String password) throws IOException {
@@ -57,12 +56,6 @@ public class Client {
     public void userInfoUpdate(){
 
     }
-    public void sendMessage(String message) throws IOException {
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        out.println(message);
-        out.flush();
-        userInfoUpdate();
-    }
     public void addTask(TaskDto task) throws IOException, ParseException {
         AddTaskRequest request = new AddTaskRequest (this.token,
                                                     task.getEmployeeTask(),
@@ -75,14 +68,16 @@ public class Client {
         System.out.println("Server response: "+addTaskResponse);
     }
 
-    public GetAssociateTasksResponse getTasksInAnInterval(String startDate, String endDate, String token) throws IOException, ParseException {
+    public GetAssociateTasksResponse getTasksInAnInterval(String startDate, String endDate) throws IOException, ParseException {
 
-        GetAssociateTasksRequest getAssociateTasksRequest = new GetAssociateTasksRequest(startDate, endDate, token);
-
+        GetAssociateTasksRequest getAssociateTasksRequest = new GetAssociateTasksRequest(startDate, endDate, this.token);
+        System.out.println(getAssociateTasksRequest.getStartDate()+ "   " + getAssociateTasksRequest.getEndDate()+ "   " + getAssociateTasksRequest.getToken());
         out.writeUTF(xstream.toXML(getAssociateTasksRequest));
-        GetAssociateTasksResponse getAssociateTasksResponse = (GetAssociateTasksResponse) xstream.fromXML(in.readUTF());
-        System.out.println("Server response: " + getAssociateTasksResponse);
-        return getAssociateTasksResponse;
+
+        GetAssociateTasksResponse TasksResponse = (GetAssociateTasksResponse) xstream.fromXML(in.readUTF());
+
+        System.out.println("Server response: " + TasksResponse);
+        return TasksResponse;
     }
 
     private void initializeXstream(){
@@ -100,6 +95,7 @@ public class Client {
         xstream.alias("UpdateCredentialRequest", UpdateCredentialRequest.class);
         xstream.alias("UpdateCredentialResponse", UpdateCredentialResponse.class);
         xstream.alias("ExitRequest", ExitRequest.class);
+        xstream.alias("org.fhtw.dto.TaskDto", TaskDto.class);
         xstream.registerConverter(new NullConverter(), XStream.PRIORITY_VERY_HIGH);
         xstream.setMarshallingStrategy(new TreeMarshallingStrategy());
     }

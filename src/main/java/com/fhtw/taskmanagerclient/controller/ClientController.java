@@ -27,13 +27,10 @@ import java.util.ResourceBundle;
 public class ClientController implements Initializable {
 
     private Client client;
-
     @FXML
     private Button newEntryButton;
-
     @FXML
     private ListView<TaskDto> entriesListView;
-
     private GetAssociateTasksResponse tasks;
     private ObservableList<TaskDto> entriesList = FXCollections.observableArrayList();
     public ClientController(Client client) {
@@ -41,6 +38,8 @@ public class ClientController implements Initializable {
     }
 
 
+    String currentWeekStartDate = DateTimeHelper.getWeekStartDate();
+    String currentWeekEndDate = DateTimeHelper.getWeekEndDate();
 
 
 
@@ -49,6 +48,8 @@ public class ClientController implements Initializable {
         Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("new_entry-view.fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> new SubmitionController(client, stage));
+        //updates entries when closed
+        stage.setOnHidden(e->{this.updateEntriesListView();});
         Scene scene = new Scene(fxmlLoader.load());
 
         stage.setTitle("New Entry Submission");
@@ -58,24 +59,23 @@ public class ClientController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        updateEntriesListView();
+        this.entriesListView.setItems(entriesList);
+    }
 
-        String currentWeekStartDate = DateTimeHelper.getWeekStartDate();
-        String currentWeekEndDate = DateTimeHelper.getWeekEndDate();
-
+    private void updateEntriesListView(){
         try {
-            tasks = client.getTasksInAnInterval(currentWeekStartDate, currentWeekEndDate, client.getToken());
+            tasks = client.getTasksInAnInterval(currentWeekStartDate, currentWeekEndDate);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
         try {
-            entriesList.addAll(tasks.getTasks());
+            entriesList.setAll(tasks.getTasks());
         }catch (NullPointerException n){
-            System.out.println("nothing for this week");
+            System.out.println("No Entries in this period");
         }
-
-        this.entriesListView.setItems(entriesList);
 
     }
 }

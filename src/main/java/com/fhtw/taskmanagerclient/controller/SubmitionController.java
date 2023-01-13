@@ -41,6 +41,7 @@ public class SubmitionController{
         System.out.println(taskDateDatePicker.getValue().toString());
         this.client.addTask(task);
         stage.close();
+
     }
 
 
