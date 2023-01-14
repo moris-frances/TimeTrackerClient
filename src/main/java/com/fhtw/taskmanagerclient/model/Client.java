@@ -80,6 +80,16 @@ public class Client {
         return TasksResponse;
     }
 
+    public boolean updatePassword(String newPassword, String repeatNewPassword) throws IOException {
+
+        if(!newPassword.equals(repeatNewPassword)) return false;
+        UpdateCredentialRequest request  = new UpdateCredentialRequest(newPassword, this.token);
+        out.writeUTF(xstream.toXML(request));
+        UpdateCredentialResponse response = (UpdateCredentialResponse) xstream.fromXML(in.readUTF());
+        if(!response.isRequestSucceeded()) return false;
+        return true;
+    }
+
     private void initializeXstream(){
         xstream = new XStream();
         xstream.addPermission(AnyTypePermission.ANY);

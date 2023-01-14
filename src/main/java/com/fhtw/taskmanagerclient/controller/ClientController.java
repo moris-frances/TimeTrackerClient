@@ -14,6 +14,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.InputMethodEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -30,16 +32,53 @@ public class ClientController implements Initializable {
     @FXML
     private Button newEntryButton;
     @FXML
+    private TableView<TaskDto> entriesTableView;
+    @FXML private TableColumn<TaskDto, String> employeeTaskColumn;
+    @FXML private TableColumn<TaskDto, String> employeeDateFromColumn;
+    @FXML private TableColumn<TaskDto, Double> employeeHoursSpentColumn;
+    @FXML
     private ListView<TaskDto> entriesListView;
     private GetAssociateTasksResponse tasks;
+
     private ObservableList<TaskDto> entriesList = FXCollections.observableArrayList();
+    @FXML
+    private Button monthlyViewButton;
+
+    @FXML
+    private Button weeklyViewButton;
+
+    @FXML
+    private DatePicker dateViewDatePicker;
+
+
+    @FXML
+    void onDateViewDatePickerChanged() {
+        currentStartDate = DateTimeHelper.getFormattedDateString(dateViewDatePicker.getValue());
+        currentEndDate = DateTimeHelper.getFormattedDateString(dateViewDatePicker.getValue());
+        updateEntriesList();
+    }
+
+    @FXML
+    void onMonthlyViewButtonButtonClick(ActionEvent event) {
+        currentStartDate = DateTimeHelper.getMonthStartDate();
+        currentEndDate = DateTimeHelper.getMonthEndDate();
+        updateEntriesList();
+    }
+
+
+    @FXML
+    void onWeeklyViewButtonButtonClick(ActionEvent event) {
+        currentStartDate = DateTimeHelper.getWeekStartDate();
+        currentEndDate = DateTimeHelper.getWeekEndDate();
+        updateEntriesList();
+    }
     public ClientController(Client client) {
         this.client = client;
     }
 
 
-    String currentWeekStartDate = DateTimeHelper.getWeekStartDate();
-    String currentWeekEndDate = DateTimeHelper.getWeekEndDate();
+    String currentStartDate = DateTimeHelper.getWeekStartDate();
+    String currentEndDate = DateTimeHelper.getWeekEndDate();
 
 
 
@@ -49,7 +88,7 @@ public class ClientController implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("new_entry-view.fxml"));
         fxmlLoader.setControllerFactory(controllerClass -> new SubmitionController(client, stage));
         //updates entries when closed
-        stage.setOnHidden(e->{this.updateEntriesListView();});
+        stage.setOnHidden(e->{this.updateEntriesList();});
         Scene scene = new Scene(fxmlLoader.load());
 
         stage.setTitle("New Entry Submission");
@@ -57,15 +96,33 @@ public class ClientController implements Initializable {
         stage.show();
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        updateEntriesListView();
-        this.entriesListView.setItems(entriesList);
+    @FXML
+    void onUpdatePasswordButtonClick() throws IOException {
+        //UpdatePasswordController
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("update_password-view.fxml"));
+        fxmlLoader.setControllerFactory(controllerClass -> new UpdatePasswordController(client, stage));
+
+        Scene scene = new Scene(fxmlLoader.load());
+
+        stage.setTitle("Update Password");
+        stage.setScene(scene);
+        stage.show();
     }
 
-    private void updateEntriesListView(){
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        updateEntriesList();
+        employeeTaskColumn.setCellValueFactory(new PropertyValueFactory<TaskDto, String>("employeeTask"));
+        employeeDateFromColumn.setCellValueFactory(new PropertyValueFactory<TaskDto, String>("employeeDateFrom"));
+        employeeHoursSpentColumn.setCellValueFactory(new PropertyValueFactory<TaskDto, Double>("employeeHoursSpent"));
+
+        this.entriesTableView.setItems(entriesList);
+    }
+
+    private void updateEntriesList(){
         try {
-            tasks = client.getTasksInAnInterval(currentWeekStartDate, currentWeekEndDate);
+            tasks = client.getTasksInAnInterval(currentStartDate, currentEndDate);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ParseException e) {
