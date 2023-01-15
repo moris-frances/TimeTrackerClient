@@ -40,14 +40,14 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Label prefHeight="18.0" prefWidth="54.0" text="Duration" GridPane.rowIndex="2">
+                  <Label prefHeight="20.0" prefWidth="98.0" text="Duration (h)" GridPane.rowIndex="2">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Label>
                   <TextField fx:id="taskTextField" GridPane.columnIndex="1" />
-                  <TextField fx:id="durationTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                   <DatePicker fx:id="taskDateDatePicker" prefHeight="26.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="durationTextField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>
             </GridPane>
             <Button fx:id="submitButton" layoutX="119.0" layoutY="215.0" mnemonicParsing="false" onAction="#onSubmitButtonClick" prefHeight="26.0" prefWidth="91.0" text="Submit" />

@@ -13,25 +13,53 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The controller for the login view. It handles the interaction between the view and the model.
+ * It implements the Initializable interface to initialize the client object and the signInButtonClick
+ * method to handle the sign-in button click event.
+ */
 public class LoginController implements Initializable{
 
     private Stage stage;
     private Client client;
+    /**
+     * The text field for the username.
+     */
     @FXML
-    private TextField passwordTextField;
+    private TextField usernameTextField;
+
+    /**
+     * The password field for the password.
+     */
+    @FXML
+    private TextField passwordPasswordField;
+
+    /**
+     * The sign-in button.
+     */
     @FXML
     private Button signInButton;
 
-    @FXML
-    private TextField usernameTextField;
+    /**
+     * Creates a new instance of the login controller.
+     *
+     * @param stage the primary stage of the application.
+     */
 
     public LoginController(Stage stage){
         this.stage = stage;
     }
 
+    /**
+     * Handles the sign-in button click event. It checks if the login is successful and based on the role of the user
+     * it loads the appropriate view and sets it as the scene for the primary stage.
+     *
+     * @param event the action event of the button click.
+     * @throws IOException if there is a problem loading the fxml file.
+     */
     @FXML
     void signInButtonClick(ActionEvent event) throws IOException {
-        if(client.login(usernameTextField.getText(), passwordTextField.getText()))
+        if(client.login(usernameTextField.getText(), passwordPasswordField.getText()))
         {
             if(client.getUserRole().equals("manager")){
                 FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("manager-view.fxml"));
@@ -43,7 +71,7 @@ public class LoginController implements Initializable{
                 return;
             }
             FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("client-view.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> new ClientController(client));
+            fxmlLoader.setControllerFactory(controllerClass -> new TaskManagerController(client));
             Scene scene = new Scene(fxmlLoader.load());
             stage.setTitle("Task Manager");
             stage.setScene(scene);
@@ -60,10 +88,6 @@ public class LoginController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            client =  new Client("localhost", 8888);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 }

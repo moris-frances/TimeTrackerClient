@@ -9,8 +9,19 @@ import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class helperMethods {
+/**
 
+ A helper class that provides methods to facilitate different tasks.
+ */
+public class helperMethods {
+    /**
+
+     Creates an observable list of associateTaskListItem objects from a GetAllAssociatesByManagerIdResponse object.
+
+     @param associates The GetAllAssociatesByManagerIdResponse object from which to create the observable list.
+
+     @return An observable list of associateTaskListItem objects created from the associates in the GetAllAssociatesByManagerIdResponse object.
+     */
     public static ObservableList<associateTaskListItem> associateTaskListFactory(GetAllAssociatesByManagerIdResponse associates){
 
         ObservableList<associateTaskListItem> list = FXCollections.observableArrayList();

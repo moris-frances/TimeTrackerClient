@@ -25,44 +25,80 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ResourceBundle;
 
+/**
+ * The ManagerPanelController class is the controller for the Manager Panel view.
+ * It is responsible for handling the events and logic of the view and communicating with the client model.
+ *
+ */
 public class ManagerPanelController implements Initializable {
-
-
+    /**
+     * The entriesList variable is an observable list that holds the tasks of the associates
+     */
     private ObservableList<associateTaskListItem> entriesList = FXCollections.observableArrayList();
+    /**
+     * The client variable is the client model
+     */
     private Client client;
 
+    /**
+     * The employees variable is the response from the getAllAssociatesByManagerId method
+     */
     private GetAllAssociatesByManagerIdResponse employees;
+    /**
+     * The date picker for the update entries single-date server request.
+     */
     @FXML
     private DatePicker dateViewDatePicker;
 
-    @FXML
-    private TableColumn<associateTaskListItem, String> employeeDateFromColumn;
-
-    @FXML
-    private TableColumn<associateTaskListItem, Double> employeeHoursSpentColumn;
-
+    @FXML private TableColumn<associateTaskListItem, String> employeeTaskColumn;
+    /**
+     * The date from column of the table view.
+     */
+    @FXML private TableColumn<associateTaskListItem, String> employeeDateFromColumn;
+    /**
+     * The hours spent column of the table view.
+     */
+    @FXML private TableColumn<associateTaskListItem, Double> employeeHoursSpentColumn;
+    /**
+     * The employee name column of the table view.
+     */
     @FXML
     private TableColumn<associateTaskListItem, String> employeeNameTableColumn;
-
-    @FXML
-    private TableColumn<associateTaskListItem, String> employeeTaskColumn;
-
+    /**
+     * The table view object, representing the table where entries are displayed.
+     */
     @FXML
     private TableView<associateTaskListItem> entriesTableView;
-
+    /**
+     * The monthly view button.
+     */
     @FXML
     private Button monthlyViewButton;
 
-    @FXML
-    private Button updateEntriesButton;
-
+    /**
+     * The weekly view button.
+     */
     @FXML
     private Button weeklyViewButton;
 
+    /**
+     * The update entries button.
+     */
+    @FXML
+    private Button updateEntriesButton;
+    /**
+     * The Update Password button.
+     */
     @FXML
     private Button updatePasswordButton;
 
+    /**
+     * The current start date.
+     */
     String currentStartDate = DateTimeHelper.getWeekStartDate();
+    /**
+     * The current end date.
+     */
     String currentEndDate = DateTimeHelper.getWeekEndDate();
 
     public ManagerPanelController(Client client) {
@@ -74,7 +110,12 @@ public class ManagerPanelController implements Initializable {
         currentEndDate = DateTimeHelper.getFormattedDateString(dateViewDatePicker.getValue());
         updateEntriesList();
     }
-
+    /**
+     * Handles the click event for the monthly view button.
+     * It updates the current start and end date with the start and end of the current month
+     * and updates the entries list.
+     * @param event the click event.
+     */
     @FXML
     void onMonthlyViewButtonButtonClick(ActionEvent event) {
         currentStartDate = DateTimeHelper.getMonthStartDate();
@@ -82,13 +123,31 @@ public class ManagerPanelController implements Initializable {
         updateEntriesList();
     }
 
-
+    /**
+     * Handles the click event for the weekly view button.
+     * It updates the current start and end date with the start and end of the current week
+     * and updates the entries list.
+     * @param event the click event.
+     */
     @FXML
     void onWeeklyViewButtonButtonClick(ActionEvent event) {
         currentStartDate = DateTimeHelper.getWeekStartDate();
         currentEndDate = DateTimeHelper.getWeekEndDate();
         updateEntriesList();
     }
+    /**
+     * Initializes the controller class. This method is automatically called
+     * after the fxml file has been loaded. It sets up the TableView with the
+     * appropriate columns and calls the updateEntriesList method to populate
+     * the TableView with data.
+     *
+     * @param location
+     *            the location used to resolve relative paths for the root
+     *            object, or null if the location is not known
+     * @param resources
+     *            the resources used to localize the root object, or null if
+     *            the root object was not localized
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         updateEntriesList();
@@ -98,6 +157,13 @@ public class ManagerPanelController implements Initializable {
         employeeHoursSpentColumn.setCellValueFactory(new PropertyValueFactory<associateTaskListItem, Double>("employeeHoursSpent"));
         this.entriesTableView.setItems(entriesList);
     }
+    /**
+     * This method is called when the update password button is clicked. It opens a new stage
+     * for the user to update their password
+
+     * @throws IOException
+     *            if there is an error loading the update password view
+     */
     @FXML
     void onUpdatePasswordButtonClick() throws IOException {
         //UpdatePasswordController
@@ -111,7 +177,11 @@ public class ManagerPanelController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-
+    /**
+     * This method is called when the update entries button is clicked.
+     * It updates the entriesList field and populates the TableView with the data
+     *
+     */
     @FXML
     private void updateEntriesList() {
         try {
