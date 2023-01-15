@@ -11,8 +11,12 @@ import java.net.Socket;
 import java.text.ParseException;
 
 public class Client {
+
     private String hostName;
     private String token = "";
+
+
+    private String userRole;
     private int portNumber;
     XStream xstream = null;
     public AssociateDto user = new AssociateDto();
@@ -26,6 +30,9 @@ public class Client {
         this.out = new DataOutputStream(socket.getOutputStream());
         this.in = new DataInputStream(socket.getInputStream());
         initializeXstream();
+    }
+    public String getUserRole() {
+        return userRole;
     }
 
     public String getToken() {
@@ -43,18 +50,23 @@ public class Client {
         SignInResponse signInResponse = (SignInResponse) xstream.fromXML(in.readUTF());
 
         if (signInResponse.isRequestSucceeded()) {
-            token = signInResponse.getJwtToken();
+
+            this.userRole = signInResponse.getRole();
+            this.token = signInResponse.getJwtToken();
             this.user.setAssociateId(signInResponse.getEmployeeId());
             this.user.setAssociateName(username);
             System.out.println("Server response: " + signInResponse);
             return true;
+
         }
         return false;
     }
-    //requests user info and updates it when received
-    //used after login and after every entering the system
-    public void userInfoUpdate(){
-
+    public GetAllAssociatesByManagerIdResponse getAllManagersEmployeesTasks(String startDate, String endDate) throws ParseException, IOException {
+        GetAllAssociatesByManagerIdRequest request = new GetAllAssociatesByManagerIdRequest(this.token,startDate,endDate);
+        out.writeUTF(xstream.toXML(request));
+        GetAllAssociatesByManagerIdResponse response = (GetAllAssociatesByManagerIdResponse) xstream.fromXML(in.readUTF());
+        System.out.println("Server response: " + response);
+        return response;
     }
     public void addTask(TaskDto task) throws IOException, ParseException {
         AddTaskRequest request = new AddTaskRequest (this.token,
@@ -106,6 +118,7 @@ public class Client {
         xstream.alias("UpdateCredentialResponse", UpdateCredentialResponse.class);
         xstream.alias("ExitRequest", ExitRequest.class);
         xstream.alias("org.fhtw.dto.TaskDto", TaskDto.class);
+        xstream.alias("org.fhtw.dto.AssociateDto", AssociateDto.class);
         xstream.registerConverter(new NullConverter(), XStream.PRIORITY_VERY_HIGH);
         xstream.setMarshallingStrategy(new TreeMarshallingStrategy());
     }

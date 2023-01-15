@@ -116,9 +116,9 @@ public class ClientController implements Initializable {
         employeeTaskColumn.setCellValueFactory(new PropertyValueFactory<TaskDto, String>("employeeTask"));
         employeeDateFromColumn.setCellValueFactory(new PropertyValueFactory<TaskDto, String>("employeeDateFrom"));
         employeeHoursSpentColumn.setCellValueFactory(new PropertyValueFactory<TaskDto, Double>("employeeHoursSpent"));
-
         this.entriesTableView.setItems(entriesList);
     }
+
 
     private void updateEntriesList(){
         try {

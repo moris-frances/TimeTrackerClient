@@ -33,6 +33,15 @@ public class LoginController implements Initializable{
     void signInButtonClick(ActionEvent event) throws IOException {
         if(client.login(usernameTextField.getText(), passwordTextField.getText()))
         {
+            if(client.getUserRole().equals("manager")){
+                FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("manager-view.fxml"));
+                fxmlLoader.setControllerFactory(controllerClass -> new ManagerPanelController(client));
+                Scene scene = new Scene(fxmlLoader.load());
+                stage.setTitle("Manager Panel");
+                stage.setScene(scene);
+                stage.show();
+                return;
+            }
             FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("client-view.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> new ClientController(client));
             Scene scene = new Scene(fxmlLoader.load());
@@ -40,7 +49,7 @@ public class LoginController implements Initializable{
             stage.setScene(scene);
             stage.show();
         }else{
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Wrong Credentials", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Wrong Credentials \n (or internal Server Error)", ButtonType.OK);
             alert.showAndWait();
             if (alert.getResult() == ButtonType.OK) {
                 alert.close();
