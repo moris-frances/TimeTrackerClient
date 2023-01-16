@@ -66,7 +66,7 @@ public class LoginController{
             openView("client-view.fxml", "Task Manager", new TaskManagerController(this.client));
             this.stage.close();
         }else{
-            showAlert("Wrong Credentials! \n Try again!");
+            showAlert("Wrong Credentials! \n Try again! ");
         }
 
     }
