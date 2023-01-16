@@ -17,14 +17,18 @@ import java.text.ParseException;
  It also uses the XStream library to convert the data sent and received to and from XML format.
  */
 public class Client {
-    private String hostName;
     private String token = "";
-    private String userRole;
-    private int portNumber;
+    private String userRole = "";
     XStream xstream = null;
-    public AssociateDto user = new AssociateDto();
     private Socket socket;
+    /**
+     The DataOutputStream of the socket of the client.
+     */
     private DataOutputStream out;
+    /**
+
+     The DataInputStream of the socket of the client.
+     */
     private DataInputStream in;
     /**
 
@@ -35,29 +39,19 @@ public class Client {
      @throws IOException If the socket cannot be created or connected to the given host and port.
      */
     public Client(String hostName, int portNumber) throws IOException {
-        this.hostName = hostName;
-        this.portNumber = portNumber;
         this.socket = new Socket(hostName, portNumber);
         this.out = new DataOutputStream(socket.getOutputStream());
         this.in = new DataInputStream(socket.getInputStream());
         initializeXstream();
     }
     /**
-
      Returns the current user role
      @return userRole
      */
     public String getUserRole() {
         return userRole;
     }
-    /**
 
-     Returns the current token
-     @return token
-     */
-    public String getToken() {
-        return token;
-    }
     /**
 
      Sends a login request to the server with the given username and password.
@@ -68,7 +62,6 @@ public class Client {
      @throws IOException If there is an issue sending the login request to the server.
      */
     public boolean login(String username, String password) throws IOException {
-
         SignInRequest signInRequest = new SignInRequest();
         signInRequest.setUsername(username);
         signInRequest.setPassword(password);
@@ -77,9 +70,6 @@ public class Client {
         if (signInResponse.isRequestSucceeded()) {
             this.userRole = signInResponse.getRole();
             this.token = signInResponse.getJwtToken();
-            this.user.setAssociateId(signInResponse.getEmployeeId());
-            this.user.setAssociateName(username);
-            System.out.println("Server response: " + signInResponse);
             return true;
         }
         return false;
@@ -97,7 +87,6 @@ public class Client {
         GetAllAssociatesByManagerIdRequest request = new GetAllAssociatesByManagerIdRequest(this.token,startDate,endDate);
         out.writeUTF(xstream.toXML(request));
         GetAllAssociatesByManagerIdResponse response = (GetAllAssociatesByManagerIdResponse) xstream.fromXML(in.readUTF());
-        System.out.println("Server response: " + response);
         return response;
     }
     /**
@@ -106,8 +95,9 @@ public class Client {
      @param task the task to add
      @throws IOException
      @throws ParseException
+     @returns true if request was successful
      */
-    public void addTask(TaskDto task) throws IOException, ParseException {
+    public boolean addTask(TaskDto task) throws IOException, ParseException {
         AddTaskRequest request = new AddTaskRequest (this.token,
                                                     task.getEmployeeTask(),
                                                     task.getEmployeeDateFrom(),
@@ -115,8 +105,7 @@ public class Client {
         out.writeUTF(xstream.toXML(request));
         String serverResponseXml = in.readUTF();
         AddTaskResponse addTaskResponse = (AddTaskResponse) xstream.fromXML(serverResponseXml);
-
-        System.out.println("Server response: "+addTaskResponse);
+        return addTaskResponse.isRequestSucceeded();
     }
     /**
 
@@ -128,14 +117,9 @@ public class Client {
      @throws ParseException if the date format is not valid
      */
     public GetAssociateTasksResponse getTasksInAnInterval(String startDate, String endDate) throws IOException, ParseException {
-
         GetAssociateTasksRequest getAssociateTasksRequest = new GetAssociateTasksRequest(startDate, endDate, this.token);
-        System.out.println(getAssociateTasksRequest.getStartDate()+ "   " + getAssociateTasksRequest.getEndDate()+ "   " + getAssociateTasksRequest.getToken());
         out.writeUTF(xstream.toXML(getAssociateTasksRequest));
-
         GetAssociateTasksResponse TasksResponse = (GetAssociateTasksResponse) xstream.fromXML(in.readUTF());
-
-        System.out.println("Server response: " + TasksResponse);
         return TasksResponse;
     }
     /**

@@ -34,10 +34,12 @@ public class DateTimeHelper {
      */
     public static String getWeekEndDate() {
         Calendar calendar = Calendar.getInstance();
-        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
             calendar.add(Calendar.DATE, 1);
         }
-        calendar.add(Calendar.DATE, -1);
+
+            calendar.add(Calendar.DATE, -1);
+
         return dateFormat.format(calendar.getTime()).toString();
     }
     /**

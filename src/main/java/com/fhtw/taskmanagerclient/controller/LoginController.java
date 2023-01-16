@@ -1,42 +1,29 @@
 package com.fhtw.taskmanagerclient.controller;
-import com.fhtw.taskmanagerclient.ClientApplication;
 import com.fhtw.taskmanagerclient.model.Client;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
+import static com.fhtw.taskmanagerclient.helpers.helperMethods.openView;
+import static com.fhtw.taskmanagerclient.helpers.helperMethods.showAlert;
 
 /**
  * The controller for the login view. It handles the interaction between the view and the model.
- * It implements the Initializable interface to initialize the client object and the signInButtonClick
- * method to handle the sign-in button click event.
+ * It implements the signInButtonClick method to handle the sign-in button click event.
  */
-public class LoginController implements Initializable{
+public class LoginController{
 
     private Stage stage;
     private Client client;
-    /**
-     * The text field for the username.
-     */
+    @FXML
+    private TextField hostnameTextField;
+    @FXML
+    private TextField portTextField;
     @FXML
     private TextField usernameTextField;
-
-    /**
-     * The password field for the password.
-     */
     @FXML
     private TextField passwordPasswordField;
-
-    /**
-     * The sign-in button.
-     */
     @FXML
     private Button signInButton;
 
@@ -51,43 +38,37 @@ public class LoginController implements Initializable{
     }
 
     /**
-     * Handles the sign-in button click event. It checks if the login is successful and based on the role of the user
-     * it loads the appropriate view and sets it as the scene for the primary stage.
+     * Establishes a connection with the server and handles the sign-in button click event.
+     * It checks if the connection and login are successful and based on the role of the user
+     * it loads the appropriate view and sets it as the scene for the primary stage or shows a warning dialog in the case of an error.
      *
      * @param event the action event of the button click.
      * @throws IOException if there is a problem loading the fxml file.
      */
     @FXML
     void signInButtonClick(ActionEvent event) throws IOException {
+        try {
+            client =  new Client(this.hostnameTextField.getText(), Integer.parseInt(this.portTextField.getText()));
+        } catch (IOException e) {
+            showAlert("No server running on " + this.hostnameTextField.getText() + this.portTextField.getText());
+            return;
+        } catch (NumberFormatException e){
+            showAlert("Port must be a whole number!");
+            return;
+        }
         if(client.login(usernameTextField.getText(), passwordPasswordField.getText()))
         {
             if(client.getUserRole().equals("manager")){
-                FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("manager-view.fxml"));
-                fxmlLoader.setControllerFactory(controllerClass -> new ManagerPanelController(client));
-                Scene scene = new Scene(fxmlLoader.load());
-                stage.setTitle("Manager Panel");
-                stage.setScene(scene);
-                stage.show();
+                openView("manager-view.fxml", "Manager Panel", new ManagerPanelController(this.client));
+                this.stage.close();
                 return;
             }
-            FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("client-view.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> new TaskManagerController(client));
-            Scene scene = new Scene(fxmlLoader.load());
-            stage.setTitle("Task Manager");
-            stage.setScene(scene);
-            stage.show();
+            openView("client-view.fxml", "Task Manager", new TaskManagerController(this.client));
+            this.stage.close();
         }else{
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Wrong Credentials \n (or internal Server Error)", ButtonType.OK);
-            alert.showAndWait();
-            if (alert.getResult() == ButtonType.OK) {
-                alert.close();
-            }
+            showAlert("Wrong Credentials! \n Try again!");
         }
 
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
-    }
 }

@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.fhtw.taskmanagerclient.helpers.helperMethods.openView;
+
 /**
  * The main class for the Task Manager client application.
  * It extends the javafx Application class and overrides the start method
@@ -24,18 +26,13 @@ public class ClientApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("login-view.fxml"));
-        fxmlLoader.setControllerFactory(controllerClass -> new LoginController(stage));
-        Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Task Manager");
-        stage.setScene(scene);
-        stage.show();
+        openView("login-view.fxml", "Task Manager", new LoginController(stage) ,stage);
     }
 
     public static void main(String[] args) {
         launch();
     }
 
-    
+
 
 }

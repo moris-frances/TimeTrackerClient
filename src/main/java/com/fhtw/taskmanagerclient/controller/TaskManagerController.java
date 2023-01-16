@@ -21,6 +21,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.ResourceBundle;
 
+import static com.fhtw.taskmanagerclient.helpers.helperMethods.openView;
+
 /**
  * The controller for the task manager view.
  * It handles the interaction between the view and the model.
@@ -30,74 +32,36 @@ import java.util.ResourceBundle;
 public class TaskManagerController implements Initializable {
 
     private Client client;
-    /**
-     * The new entry button.
-     */
-    @FXML
-    private Button newEntryButton;
-    /**
-     * The table view for the task entries.
-     */
-    @FXML
-    private TableView<TaskDto> entriesTableView;
-    /**
-     * The task column of the table view.
-     */
+    @FXML private Button newEntryButton;
+    @FXML private TableView<TaskDto> entriesTableView;
     @FXML private TableColumn<TaskDto, String> employeeTaskColumn;
-    /**
-     * The date from column of the table view.
-     */
     @FXML private TableColumn<TaskDto, String> employeeDateFromColumn;
-    /**
-     * The hours spent column of the table view.
-     */
     @FXML private TableColumn<TaskDto, Double> employeeHoursSpentColumn;
+    @FXML private Button monthlyViewButton;
+    @FXML private Button weeklyViewButton;
+
     /**
-     * The list view for the task entries.
+     * The date picker for the update entries single-date server request.
      */
-    @FXML
-    private ListView<TaskDto> entriesListView;
+    @FXML private DatePicker dateViewDatePicker;
+    @FXML private Button updatePasswordButton;
     /**
      * The tasks response from the server.
      */
     private GetAssociateTasksResponse tasks;
 
     /**
-     * The observable list for the entries.
+     * The observable list for the entries of the TableView.
      */
     private ObservableList<TaskDto> entriesList = FXCollections.observableArrayList();
     /**
-     * The monthly view button.
-     */
-    @FXML
-    private Button monthlyViewButton;
-
-    /**
-     * The weekly view button.
-     */
-    @FXML
-    private Button weeklyViewButton;
-
-    /**
-     * The date picker for the update entries single-date server request.
-     */
-    @FXML
-    private DatePicker dateViewDatePicker;
-    /**
-     * The Update Password button.
-     */
-    @FXML
-    private Button updatePasswordButton;
-
-    /**
-     * The current start date.
+     * The current state start date.
      */
     String currentStartDate = DateTimeHelper.getWeekStartDate();
     /**
-     * The current end date.
+     * The current state end date.
      */
     String currentEndDate = DateTimeHelper.getWeekEndDate();
-
 
     /**
      * The constructor of the controller that set the client field
@@ -115,18 +79,9 @@ public class TaskManagerController implements Initializable {
     @FXML
     void onNewEntryButtonClick(ActionEvent event) throws IOException {
         Stage stage = new Stage();
-        FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("new_entry-view.fxml"));
-        fxmlLoader.setControllerFactory(controllerClass -> new SubmitionController(client, stage));
-        //updates entries when closed
         stage.setOnHidden(e->{this.updateEntriesList();});
-        Scene scene = new Scene(fxmlLoader.load());
-
-        stage.setTitle("New Entry Submission");
-        stage.setScene(scene);
-        stage.show();
+        openView("new_entry-view.fxml", "New Entry Submission", new SubmitionController(client, stage), stage);
     }
-
-
     /**
      * Handles the click event for the update password button.
      * It opens a new window for the update password.
@@ -135,16 +90,9 @@ public class TaskManagerController implements Initializable {
 
     @FXML
     void onUpdatePasswordButtonClick() throws IOException {
-        //UpdatePasswordController
+        //passing stage to make the dialog self-closeable
         Stage stage = new Stage();
-        FXMLLoader fxmlLoader = new FXMLLoader(ClientApplication.class.getResource("update_password-view.fxml"));
-        fxmlLoader.setControllerFactory(controllerClass -> new UpdatePasswordController(client, stage));
-
-        Scene scene = new Scene(fxmlLoader.load());
-
-        stage.setTitle("Update Password");
-        stage.setScene(scene);
-        stage.show();
+        openView("update_password-view.fxml", "Update Password", new UpdatePasswordController(client, stage), stage);
     }
 
     /**

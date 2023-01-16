@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.text.ParseException;
 
+import static com.fhtw.taskmanagerclient.helpers.helperMethods.showAlert;
+
 
 /**
  * The controller class for the submission view.
@@ -17,26 +19,11 @@ public class SubmitionController{
      * The client object used to communicate with the server.
      */
     private Client client;
-    /**
-     * The stage of the submission view.
-     */
     private Stage stage;
-
-    /**
-     * The duration text field.
-     */
     @FXML
     private TextField durationTextField;
-
-    /**
-     * The task date date picker.
-     */
     @FXML
     private DatePicker taskDateDatePicker;
-
-    /**
-     * The task text field.
-     */
     @FXML
     private TextField taskTextField;
 
@@ -64,16 +51,13 @@ public class SubmitionController{
                     taskTextField.getText(),
                     taskDateDatePicker.getValue().toString(),
                     Double.parseDouble(durationTextField.getText()));
-            System.out.println(taskDateDatePicker.getValue().toString());
-            this.client.addTask(task);
-            stage.close();
-        }catch(NumberFormatException n){
-
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Please enter a valid number of hours!", ButtonType.OK);
-            alert.showAndWait();
-            if (alert.getResult() == ButtonType.OK) {
-                alert.close();
+            if(!this.client.addTask(task)){
+                showAlert("Server Error!");
+                return;
             }
+            stage.close();
+        }catch(NumberFormatException|NullPointerException n){
+            showAlert("Please enter a valid number of hours!");
         }
     }
 }
