@@ -53,7 +53,6 @@ public class Client {
     }
 
     /**
-
      Sends a login request to the server with the given username and password.
      If the login request is successful, it sets the userRole and token of the current client instance.
      @param username The username to login with.
@@ -77,14 +76,12 @@ public class Client {
     /**
 
      Sends a request to the server to retrieve all tasks of the associates associated with the manager
-     @param startDate the start date of the interval of the tasks to retrieve
-     @param endDate the end date of the interval of the tasks to retrieve
      @return GetAllAssociatesByManagerIdResponse containing all associates and their tasks
      @throws ParseException
      @throws IOException
      */
-    public GetAllAssociatesByManagerIdResponse getAllManagersEmployeesTasks(String startDate, String endDate) throws ParseException, IOException {
-        GetAllAssociatesByManagerIdRequest request = new GetAllAssociatesByManagerIdRequest(this.token,startDate,endDate);
+    public GetAllAssociatesByManagerIdResponse getAllManagersEmployeesTasks() throws ParseException, IOException {
+        GetAllAssociatesByManagerIdRequest request = new GetAllAssociatesByManagerIdRequest(this.token);
         out.writeUTF(xstream.toXML(request));
         GetAllAssociatesByManagerIdResponse response = (GetAllAssociatesByManagerIdResponse) xstream.fromXML(in.readUTF());
         return response;

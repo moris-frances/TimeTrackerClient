@@ -16,10 +16,8 @@ public class LoginController{
 
     private Stage stage;
     private Client client;
-    @FXML
-    private TextField hostnameTextField;
-    @FXML
-    private TextField portTextField;
+    private String hostname = "localhost";
+    private int port = 8888;
     @FXML
     private TextField usernameTextField;
     @FXML
@@ -38,7 +36,7 @@ public class LoginController{
     }
 
     /**
-     * Establishes a connection with the server and handles the sign-in button click event.
+     * Establishes a connection with the server and handles sign-in.
      * It checks if the connection and login are successful and based on the role of the user
      * it loads the appropriate view and sets it as the scene for the primary stage or shows a warning dialog in the case of an error.
      *
@@ -48,9 +46,9 @@ public class LoginController{
     @FXML
     void signInButtonClick(ActionEvent event) throws IOException {
         try {
-            client =  new Client(this.hostnameTextField.getText(), Integer.parseInt(this.portTextField.getText()));
+            client =  new Client(this.hostname, this.port);
         } catch (IOException e) {
-            showAlert("No server running on " + this.hostnameTextField.getText() + this.portTextField.getText());
+            showAlert("No server running on " + this.hostname + ": " + this.port);
             return;
         } catch (NumberFormatException e){
             showAlert("Port must be a whole number!");

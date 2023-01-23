@@ -44,11 +44,6 @@ public class ManagerPanelController implements Initializable {
      * The employees variable holds the response from the getAllAssociatesByManagerId method
      */
     private GetAllAssociatesByManagerIdResponse employees;
-    /**
-     * The date picker for the update entries single-date server request.
-     */
-    @FXML
-    private DatePicker dateViewDatePicker;
 
     @FXML private TableColumn<associateTaskListItem, String> employeeTaskColumn;
     @FXML private TableColumn<associateTaskListItem, String> employeeDateFromColumn;
@@ -58,8 +53,6 @@ public class ManagerPanelController implements Initializable {
      * The table view object, representing the table where entries are displayed.
      */
     @FXML private TableView<associateTaskListItem> entriesTableView;
-    @FXML private Button monthlyViewButton;
-    @FXML private Button weeklyViewButton;
     @FXML private Button updateEntriesButton;
     @FXML private Button updatePasswordButton;
 
@@ -75,37 +68,7 @@ public class ManagerPanelController implements Initializable {
     public ManagerPanelController(Client client) {
         this.client = client;
     }
-    @FXML
-    void onDateViewDatePickerChanged() {
-        currentStartDate = DateTimeHelper.getFormattedDateString(dateViewDatePicker.getValue());
-        currentEndDate = DateTimeHelper.getFormattedDateString(dateViewDatePicker.getValue());
-        updateEntriesList();
-    }
-    /**
-     * Handles the click event for the monthly view button.
-     * It updates the current start and end date with the start and end of the current month
-     * and updates the entries list.
-     * @param event the click event.
-     */
-    @FXML
-    void onMonthlyViewButtonButtonClick(ActionEvent event) {
-        currentStartDate = DateTimeHelper.getMonthStartDate();
-        currentEndDate = DateTimeHelper.getMonthEndDate();
-        updateEntriesList();
-    }
 
-    /**
-     * Handles the click event for the weekly view button.
-     * It updates the current start and end date with the start and end of the current week
-     * and updates the entries list.
-     * @param event the click event.
-     */
-    @FXML
-    void onWeeklyViewButtonButtonClick(ActionEvent event) {
-        currentStartDate = DateTimeHelper.getWeekStartDate();
-        currentEndDate = DateTimeHelper.getWeekEndDate();
-        updateEntriesList();
-    }
     /**
      * Initializes the controller class. This method is automatically called
      * after the fxml file has been loaded. It sets up the TableView with the
@@ -149,7 +112,7 @@ public class ManagerPanelController implements Initializable {
     @FXML
     private void updateEntriesList() {
         try {
-            employees = client.getAllManagersEmployeesTasks(currentStartDate, currentEndDate);
+            employees = client.getAllManagersEmployeesTasks();
             if(!employees.isRequestSucceeded()){
                 showAlert("Failed to get employee information.");
                 return;
