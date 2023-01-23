@@ -17,6 +17,12 @@ public class TaskDto {
     public TaskDto() {
     }
 
+    public TaskDto(String employeeTask, String employeeDateFrom, double employeeHoursSpent) {
+        this.employeeTask = employeeTask;
+        this.employeeDateFrom = employeeDateFrom;
+        this.employeeHoursSpent = employeeHoursSpent;
+    }
+
     /**
      * Gets the name of the task.
      *
